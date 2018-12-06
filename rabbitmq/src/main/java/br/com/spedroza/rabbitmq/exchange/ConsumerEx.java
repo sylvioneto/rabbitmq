@@ -18,17 +18,20 @@ public class ConsumerEx {
 	    Channel channel = connection.createChannel();
 
 		// exchange declare
+	    // FANOUT broadcasts all the messages it receives to all the queues it knows
 	    channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
 	    
 	    // temp queue declare
 	    String queueName = channel.queueDeclare().getQueue();
+
+	    // bind the temp queue to the exchange
 	    channel.queueBind(queueName, EXCHANGE_NAME, "");
 	    System.out.println("Waiting for messages. To exit press CTRL+C");
 		
 	    //deliver call back
 	    DeliverCallback deliverCallback = (consumerTag, delivery) -> {
 	        String message = new String(delivery.getBody(), "UTF-8");
-	        System.out.println(" [x] Received " + message + "' on "+queueName);
+	        System.out.println(" ConsumerEx Received - " + message + " on "+queueName);
 	    };
 	    channel.basicConsume(queueName, true, deliverCallback, consumerTag -> { });
 	}
